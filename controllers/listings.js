@@ -37,17 +37,25 @@ module.exports.showListings=async (req,res)=>{
     
 
 }
-module.exports.createListing=async (req,res,next)=>{
-    let url=req.file.path;
-    let filename=req.file.filename;
+module.exports.createListing = async (req, res, next) => {
 
-    
-    let list=req.body.listing;
-    let user1=new Listing(list);
-    user1.owner=req.user._id;
-    user1.image={url,filename};
+    let list = req.body.listing;
+
+    let user1 = new Listing(list);
+
+    user1.owner = req.user._id;
+
+    if (req.file) {
+        let url = req.file.path;
+        let filename = req.file.filename;
+
+        user1.image = { url, filename };
+    }
+
     await user1.save();
-    req.flash("success","New Listing Created!");
+
+    req.flash("success", "New Listing Created!");
+
     res.redirect("/listings");
 };
 module.exports.renderEditForm=async (req,res)=>{
@@ -58,7 +66,7 @@ module.exports.renderEditForm=async (req,res)=>{
         return res.redirect("/listings");
     }
     let originalImageUrl=list.image.url;
-    originalImageUrl.replace("/upload","/upload/w_250");
+    originalImageUrl = originalImageUrl.replace("/upload","/upload/w_250");
     res.render("listings/edit.ejs",{list,originalImageUrl});
 
 };
