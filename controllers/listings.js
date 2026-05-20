@@ -8,9 +8,6 @@ module.exports.index=async (req,res)=>{
     let allListings= await Listing.find({});
     res.render("listings/index.ejs",{allListings});
 
-    
-    
-
 }
 module.exports.renderNewForm=(req,res)=>{
    
@@ -34,8 +31,22 @@ module.exports.showListings=async (req,res)=>{
         res.render("listings/show.ejs",{list});
 
     }
+
+}
+module.exports.searchListing=async(req,res,next)=>{
+    let search=req.query.search;
+    let allListings=await Listing.find({title:{ $regex: search, $options: "i" }
+    });
+    if(allListings.length==0){
+        req.flash("error","Listings you requested for do not exist!");
+        res.redirect("/listings");
+    }
+    else{
+         res.render("listings/index.ejs", { allListings });
+    }
     
 
+    
 }
 module.exports.createListing = async (req, res, next) => {
 
